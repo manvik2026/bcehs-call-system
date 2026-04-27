@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Call System — The British Co-Ed High School</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&family=Crimson+Pro:ital,wght@0,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:    #0d1b2a;
+    --wine:    #8b1a2e;
+    --gold:    #c9972c;
+    --cream:   #f5f0e8;
+    --fog:     #e8e2d5;
+    --ink:     #1c1c1c;
+    --mist:    rgba(13,27,42,0.06);
+    --shadow:  0 4px 32px rgba(13,27,42,0.12);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Decorative grain ── */
+  body::before {
+    content:'';
+    position:fixed; inset:0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events:none; z-index:0;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--navy);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  header::after {
+    content:'';
+    position:absolute; bottom:0; left:0; right:0; height:3px;
+    background: linear-gradient(90deg, var(--wine), var(--gold), var(--wine));
+  }
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 28px 40px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .crest {
+    width: 64px; height: 64px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px; color: var(--navy);
+    font-weight: 600;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 3px rgba(201,151,44,0.3);
+  }
+  .header-text h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.7rem;
+    color: var(--cream);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+  }
+  .header-text p {
+    font-size: 0.78rem;
+    color: var(--gold);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 3px;
+  }
+  .status-pill {
+    margin-left: auto;
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(201,151,44,0.3);
+    border-radius: 20px;
+    padding: 7px 16px;
+    font-size: 0.75rem;
+    color: #aac8a0;
+    letter-spacing: 0.08em;
+  }
+  .status-dot {
+    width: 8px; height: 8px;
+    background: #6bc67e;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100%{opacity:1;transform:scale(1)}
+    50%{opacity:.5;transform:scale(1.3)}
+  }
+
+  /* ── Main ── */
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 48px 40px;
+    position: relative; z-index: 1;
+  }
+
+  /* ── Section label ── */
+  .section-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--wine);
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-label::after {
+    content:''; flex:1; height:1px; background: rgba(139,26,46,0.2);
+  }
+
+  /* ── Flow diagram ── */
+  .flow-section { margin-bottom: 52px; }
+  .flow-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0;
+    align-items: center;
+  }
+  .flow-step {
+    background: white;
+    border: 1px solid var(--fog);
+    border-radius: 12px;
+    padding: 20px 16px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+  }
+  .flow-step:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+  }
+  .flow-icon {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+    display: block;
+  }
+  .flow-step h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.95rem;
+    color: var(--navy);
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+  .flow-step p {
+    font-size: 0.72rem;
+    color: #666;
+    line-height: 1.4;
+  }
+  .flow-arrow {
+    text-align: center;
+    color: var(--gold);
+    font-size: 1.4rem;
+    padding: 0 4px;
+  }
+  .step-num {
+    position: absolute;
+    top: -10px; left: 50%;
+    transform: translateX(-50%);
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: var(--gold);
+    font-size: 0.65rem;
+    font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ── Cards grid ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 52px;
+  }
+
+  .card {
+    background: white;
+    border: 1px solid var(--fog);
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.04);
+  }
+  .card-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--fog);
+  }
+  .card-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .icon-navy { background: rgba(13,27,42,0.08); }
+  .icon-wine { background: rgba(139,26,46,0.08); }
+  .icon-gold { background: rgba(201,151,44,0.12); }
+  .icon-green { background: rgba(107,198,126,0.12); }
+
+  .card-header h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    color: var(--navy);
+    font-weight: 600;
+  }
+  .card-header span {
+    font-size: 0.7rem;
+    color: #999;
+    display: block;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* ── Route table ── */
+  .route-table { width: 100%; border-collapse: collapse; }
+  .route-table tr { border-bottom: 1px solid var(--fog); }
+  .route-table tr:last-child { border-bottom: none; }
+  .route-table td { padding: 10px 4px; vertical-align: top; }
+  .route-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .badge-post { background: rgba(139,26,46,0.1); color: var(--wine); }
+  .badge-get  { background: rgba(13,27,42,0.08); color: var(--navy); }
+  .route-path {
+    font-family: monospace;
+    font-size: 0.78rem;
+    color: var(--navy);
+    padding: 0 12px;
+  }
+  .route-desc { font-size: 0.76rem; color: #555; }
+
+  /* ── Info rows ── */
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--fog);
+    font-size: 0.8rem;
+    gap: 16px;
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-label { color: #888; flex-shrink: 0; }
+  .info-value { color: var(--navy); font-weight: 500; text-align: right; }
+  .info-value a { color: var(--wine); text-decoration: none; }
+
+  /* ── Code block ── */
+  .code-block {
+    background: var(--navy);
+    border-radius: 10px;
+    padding: 18px 20px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.76rem;
+    color: #c9d8e8;
+    line-height: 1.7;
+    overflow-x: auto;
+    margin-top: 8px;
+  }
+  .code-block .comment { color: #5a7a6a; }
+  .code-block .cmd     { color: #c9972c; }
+  .code-block .str     { color: #8dbcb0; }
+  .code-block .env     { color: #b8a0cc; }
+
+  /* ── Setup steps ── */
+  .setup-steps { counter-reset: step; }
+  .setup-step {
+    display: flex; gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--fog);
+    align-items: flex-start;
+  }
+  .setup-step:last-child { border-bottom: none; }
+  .step-circle {
+    counter-increment: step;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: var(--gold);
+    font-size: 0.7rem;
+    font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .setup-step-content h4 {
+    font-size: 0.84rem;
+    font-weight: 500;
+    color: var(--navy);
+    margin-bottom: 3px;
+  }
+  .setup-step-content p {
+    font-size: 0.73rem;
+    color: #666;
+    line-height: 1.5;
+  }
+  .setup-step-content code {
+    background: var(--fog);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    color: var(--wine);
+  }
+
+  /* ── Language pills ── */
+  .lang-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .lang-card {
+    border: 1px solid var(--fog);
+    border-radius: 10px;
+    padding: 14px;
+  }
+  .lang-card h4 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    margin-bottom: 6px;
+    color: var(--navy);
+  }
+  .lang-card p { font-size: 0.72rem; color: #666; line-height: 1.5; }
+  .flag { font-size: 1.3rem; margin-right: 6px; }
+
+  /* ── Footer ── */
+  footer {
+    border-top: 1px solid var(--fog);
+    padding: 24px 40px;
+    text-align: center;
+    font-size: 0.72rem;
+    color: #999;
+    letter-spacing: 0.06em;
+  }
+  footer strong { color: var(--wine); }
+
+  /* ── Full-width setup card ── */
+  .card-full {
+    grid-column: 1 / -1;
+  }
+
+  /* ── Animation ── */
+  .card, .flow-step {
+    animation: fadeUp 0.4s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(16px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  .card:nth-child(1) { animation-delay: 0.05s; }
+  .card:nth-child(2) { animation-delay: 0.10s; }
+  .card:nth-child(3) { animation-delay: 0.15s; }
+  .card:nth-child(4) { animation-delay: 0.20s; }
+  .card:nth-child(5) { animation-delay: 0.25s; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="crest">BC</div>
+    <div class="header-text">
+      <h1>AI Call System</h1>
+      <p>The British Co-Ed High School, Patiala · Est. 1986</p>
+    </div>
+    <div class="status-pill">
+      <div class="status-dot"></div>
+      System Active
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- Call Flow Diagram -->
+  <div class="flow-section">
+    <div class="section-label">Call Flow Architecture</div>
+    <div class="flow-grid">
+      <div class="flow-step">
+        <div class="step-num">1</div>
+        <span class="flow-icon">📞</span>
+        <h3>Incoming Call</h3>
+        <p>Twilio receives call, hits <code>/voice</code> webhook</p>
+      </div>
+      <div class="flow-arrow">›</div>
+      <div class="flow-step">
+        <div class="step-num">2</div>
+        <span class="flow-icon">🌐</span>
+        <h3>Language</h3>
+        <p>Press 1 Hindi · Press 2 English</p>
+      </div>
+      <div class="flow-arrow">›</div>
+      <div class="flow-step">
+        <div class="step-num">3</div>
+        <span class="flow-icon">👤</span>
+        <h3>Name & Purpose</h3>
+        <p>Collects caller name and reason for call</p>
+      </div>
+      <div class="flow-arrow">›</div>
+      <div class="flow-step">
+        <div class="step-num">4</div>
+        <span class="flow-icon">🤖</span>
+        <h3>Claude AI</h3>
+        <p>Dynamic, contextual school receptionist replies</p>
+      </div>
+      <div class="flow-arrow">›</div>
+      <div class="flow-step">
+        <div class="step-num">5</div>
+        <span class="flow-icon">✅</span>
+        <h3>Resolution</h3>
+        <p>Answers query or transfers to office</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cards -->
+  <div class="cards-grid">
+
+    <!-- Webhook Routes -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-wine">⚡</div>
+        <div>
+          <h2>Webhook Routes</h2>
+          <span>Flask · Twilio TwiML</span>
+        </div>
+      </div>
+      <table class="route-table">
+        <tr>
+          <td><span class="route-badge badge-get">GET</span></td>
+          <td class="route-path">/voice</td>
+          <td class="route-desc">Entry point — greets caller, language selection</td>
+        </tr>
+        <tr>
+          <td><span class="route-badge badge-post">POST</span></td>
+          <td class="route-path">/lang_select</td>
+          <td class="route-desc">Handles DTMF 1/2 for Hindi or English</td>
+        </tr>
+        <tr>
+          <td><span class="route-badge badge-post">POST</span></td>
+          <td class="route-path">/ask_name</td>
+          <td class="route-desc">Collects caller's name via speech</td>
+        </tr>
+        <tr>
+          <td><span class="route-badge badge-post">POST</span></td>
+          <td class="route-path">/ask_purpose</td>
+          <td class="route-desc">Purpose: Admission, Fees, Complaint etc.</td>
+        </tr>
+        <tr>
+          <td><span class="route-badge badge-post">POST</span></td>
+          <td class="route-path">/ask_class</td>
+          <td class="route-desc">Class/grade for admission queries</td>
+        </tr>
+        <tr>
+          <td><span class="route-badge badge-post">POST</span></td>
+          <td class="route-path">/ai_chat</td>
+          <td class="route-desc">AI conversation loop (Claude API)</td>
+        </tr>
+        <tr>
+          <td><span class="route-badge badge-get">GET</span></td>
+          <td class="route-path">/health</td>
+          <td class="route-desc">System health + active sessions</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- School Info -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-navy">🏫</div>
+        <div>
+          <h2>School Information</h2>
+          <span>Knowledge Base · BCEHS Patiala</span>
+        </div>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Founded</span>
+        <span class="info-value">1986 · Mrs. Rosa Alicia Kucharskyj</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Principal</span>
+        <span class="info-value">Ms. Kiran Harika</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Board</span>
+        <span class="info-value">CISCE · ICSE (X) · ISC (XII)</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Classes</span>
+        <span class="info-value">Nursery (age 3+) → Class XII</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Phone</span>
+        <span class="info-value"><a href="tel:+911752651122">+91-175-265-1122</a></span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Email</span>
+        <span class="info-value"><a href="mailto:info@britishcoed.edu.in">info@britishcoed.edu.in</a></span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Website</span>
+        <span class="info-value"><a href="https://britishcoedschool.com" target="_blank">britishcoedschool.com</a></span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Rating</span>
+        <span class="info-value">4.3★ JustDial · 100% Facebook</span>
+      </div>
+    </div>
+
+    <!-- Languages -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-gold">🎙️</div>
+        <div>
+          <h2>Bilingual AI Voice</h2>
+          <span>Polly.Aditi · Amazon TTS via Twilio</span>
+        </div>
+      </div>
+      <div class="lang-grid">
+        <div class="lang-card">
+          <h4><span class="flag">🇮🇳</span>Hindi</h4>
+          <p>पूर्ण हिंदी समर्थन — प्रवेश, फीस, शिकायत सभी के लिए। Press <strong>1</strong> to activate.</p>
+        </div>
+        <div class="lang-card">
+          <h4><span class="flag">🇬🇧</span>English</h4>
+          <p>Full English support — Admissions, fees, complaints, general info. Press <strong>2</strong> to activate.</p>
+        </div>
+      </div>
+      <div style="margin-top:16px;">
+        <div class="info-row">
+          <span class="info-label">TTS Engine</span>
+          <span class="info-value">Amazon Polly (Aditi)</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Speech Input</span>
+          <span class="info-value">Twilio STT + DTMF fallback</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">AI Model</span>
+          <span class="info-value">Claude claude-sonnet-4-20250514</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Context Window</span>
+          <span class="info-value">Last 6 turns per call</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Irrelevant Cutoff</span>
+          <span class="info-value">After 2–3 off-topic responses</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Setup Instructions -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-green">🚀</div>
+        <div>
+          <h2>Quick Setup</h2>
+          <span>Step-by-step deployment guide</span>
+        </div>
+      </div>
+      <div class="setup-steps">
+        <div class="setup-step">
+          <div class="step-circle">1</div>
+          <div class="setup-step-content">
+            <h4>Install dependencies</h4>
+            <p><code>pip install -r requirements.txt</code></p>
+          </div>
+        </div>
+        <div class="setup-step">
+          <div class="step-circle">2</div>
+          <div class="setup-step-content">
+            <h4>Configure environment</h4>
+            <p>Copy <code>.env.example</code> → <code>.env</code> and fill in Twilio + Anthropic keys</p>
+          </div>
+        </div>
+        <div class="setup-step">
+          <div class="step-circle">3</div>
+          <div class="setup-step-content">
+            <h4>Run Flask server</h4>
+            <p><code>python app.py</code> — starts on port 5000</p>
+          </div>
+        </div>
+        <div class="setup-step">
+          <div class="step-circle">4</div>
+          <div class="setup-step-content">
+            <h4>Expose via ngrok</h4>
+            <p><code>ngrok http 5000</code> — copy the HTTPS URL</p>
+          </div>
+        </div>
+        <div class="setup-step">
+          <div class="step-circle">5</div>
+          <div class="setup-step-content">
+            <h4>Set Twilio webhook</h4>
+            <p>In Twilio Console → Phone Numbers → set Voice URL to <code>https://your-ngrok.app/voice</code></p>
+          </div>
+        </div>
+        <div class="setup-step">
+          <div class="step-circle">6</div>
+          <div class="setup-step-content">
+            <h4>Call & test!</h4>
+            <p>Dial the Twilio number. Or run <code>python test_call.py</code> for local simulation.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Environment Variables -->
+    <div class="card card-full">
+      <div class="card-header">
+        <div class="card-icon icon-navy">🔑</div>
+        <div>
+          <h2>Environment Configuration</h2>
+          <span>.env file · Never commit to version control</span>
+        </div>
+      </div>
+      <div class="code-block">
+<span class="comment"># ── Twilio ─────────────────────────────────────────</span>
+<span class="env">TWILIO_ACCOUNT_SID</span>=<span class="str">ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
+<span class="env">TWILIO_AUTH_TOKEN</span>=<span class="str">your_auth_token_here</span>
+<span class="env">TWILIO_PHONE_NUMBER</span>=<span class="str">+1XXXXXXXXXX</span>
+
+<span class="comment"># ── Anthropic / Claude API ─────────────────────────</span>
+<span class="env">ANTHROPIC_API_KEY</span>=<span class="str">sk-ant-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
+
+<span class="comment"># ── Flask ──────────────────────────────────────────</span>
+<span class="env">FLASK_SECRET</span>=<span class="str">bcehs-super-secret-2026</span>
+<span class="env">PORT</span>=<span class="str">5000</span>
+      </div>
+    </div>
+
+  </div><!-- /cards-grid -->
+
+</main>
+
+<footer>
+  Built for <strong>The British Co-Ed High School</strong> · Devigarh Road, Patiala – 147001, Punjab, India
+  &nbsp;·&nbsp; <a href="https://britishcoedschool.com" style="color:var(--wine);text-decoration:none;">britishcoedschool.com</a>
+  &nbsp;·&nbsp; AI Call System v1.0 · April 2026
+</footer>
+
+</body>
+</html>
